@@ -10,6 +10,11 @@ package Anzeige;
  * Jedes Menü wird über ein eigenes JPanel realisiert
  * Methoden zum erstellen der Menüs heißen "erzeuge"+ das passende Menü. Diese Methoden stehen auch alle im Interface IMenu
  * Das Spielfeld Panel (thorbensPanel) wird von der Klasse AnzeigeSpielfeld gestaltet 
+ * 
+ * 
+ * Die Methoden "create(String a)" und "eurezugeSpielfeld" wurden 1zu1 von Thorben übernehmen .
+ * Die Methode "setzeAnzeigeSpielfeld" von Thorben übernommen und verändert...veränderungen sind extra Kommentiert
+ * 
  */
 
 import java.awt.EventQueue;
@@ -18,13 +23,9 @@ import java.awt.Font;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
-import KommunikationPC.Client;
 import KommunikationPC.Clientinit;
-
-
 
 import KommunikationPC.QueueHandler;
 import Positionen.Position;
@@ -51,7 +52,7 @@ import java.awt.event.ActionEvent;
 
 
 
-public class Menu extends JFrame implements IMenu , ActionListener, KeyListener, Runnable{
+public class Menu extends JFrame implements IMenu , ActionListener, KeyListener  {
 //	private static final long serialVersionUID = 3498199861043935813L; //WIESO??? Manchmal gibts ne Fehlermeldung das das fehlt manchmal nicht ? weiß jemand eine Lösung ?
 	
 	
@@ -555,6 +556,99 @@ public void setzePausenBildschrim(){
     getContentPane().add(pausenDisplay);
 	
 }
+
+public void setzeAnzeigeSpielfeld () throws IOException{
+	create("Spielfeld.txt");
+	setBounds(100, 100, (Länge+1)*150, (Breite+1)*150);
+	 
+	thorbensPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+	thorbensPanel.setLayout(null);
+	
+	JLabel[] ele=erzeugeSpielfeld();
+
+	/*
+	 * Hinzufügen des Sepmanns und der Geister
+	 */
+
+	jSepman.setBounds(ele[Sepman].getX() , ele[Sepman].getY(), 65, 65);   //Mark
+	thorbensPanel.add(jSepman);                                              //Mark
+
+	jRandom.setBounds(ele[Random].getX() , ele[Random].getY(), 60, 55);   //Mark
+	thorbensPanel.add(jRandom);                                              //Mark
+	
+	jGuard.setBounds(ele[Defender].getX() , ele[Defender].getY(), 60, 55);   //Mark
+	thorbensPanel.add(jGuard);                                                 //Mark
+	   
+	jTracker.setBounds(ele[Tracer].getX() , ele[Tracer].getY(), 60, 55);   //Mark
+	thorbensPanel.add(jTracker);                                               //Mark
+	
+	/*
+	 * Hinzufügen der PowerUps
+	 */
+	
+	ImageIcon iiPowerup = new ImageIcon("Powerup.png");   // Hinzugefügt von Mark
+	
+	JLabel lbPowerUp1 = new JLabel(iiPowerup);  // Hinzugefügt von Mark
+	lbPowerUp1.setBounds(ele[5].getX(), ele[5].getY(), 55, 55);  // Hinzugefügt von Mark
+	thorbensPanel.add(lbPowerUp1);                // Hinzugefügt von Mark
+		
+	JLabel lbPowerUp2 = new JLabel(iiPowerup);  // Hinzugefügt von Mark
+	lbPowerUp2.setBounds(ele[16].getX(), ele[16].getY(), 55, 55);  // Hinzugefügt von Mark
+	thorbensPanel.add(lbPowerUp2);                // Hinzugefügt von Mark
+		
+	JLabel lbPowerUp3 = new JLabel(iiPowerup);  // Hinzugefügt von Mark
+	lbPowerUp3.setBounds(ele[19].getX(), ele[19].getY(), 55, 55);  // Hinzugefügt von Mark
+	thorbensPanel.add(lbPowerUp3);                // Hinzugefügt von Mark
+		
+	JLabel lbPowerUp4 = new JLabel(iiPowerup);  // Hinzugefügt von Mark
+	lbPowerUp4.setBounds(ele[30].getX(), ele[30].getY(), 55, 55);  // Hinzugefügt von Mark
+	thorbensPanel.add(lbPowerUp4);                // Hinzugefügt von Mark
+	
+	
+	
+	ImageIcon Herz=new ImageIcon("herz.gif");
+	
+	JLabel Leben1=new JLabel(Herz);
+	Leben1.setSize(50, 50);
+	Leben1.setLocation(10, 10);
+	thorbensPanel.add(Leben1);
+	
+	JLabel Leben2=new JLabel(Herz);       
+	Leben2.setSize(50, 50);
+	Leben2.setLocation(60, 10);
+	thorbensPanel.add(Leben2);
+	
+	JLabel Leben3=new JLabel(Herz);
+	Leben3.setSize(50, 50);
+	Leben3.setLocation(110, 10);
+	thorbensPanel.add(Leben3);
+	
+	ImageIcon linie1=new ImageIcon("Linie.png");
+	JLabel line1=new JLabel(linie1);
+	
+	ImageIcon linie2=new ImageIcon("Linie2.png");
+	JLabel line2=new JLabel(linie2);
+	
+	for(int z=0;z<Größe;z++)
+	{
+		if(Spielbrett[z].getNord()==true)
+		{
+			line2=new JLabel(linie2);
+			line2.setLocation(ele[z].getX()+5, ele[z].getY()-100); // Überarbeitet von Mark
+			line2.setSize(50, 100);
+			thorbensPanel.add(line2);				
+		}
+		if(Spielbrett[z].getOst()==true)
+		{
+			line1=new JLabel(linie1);
+			line1.setLocation(ele[z].getX()+55, ele[z].getY()); // Überarbeitet von Mark
+			line1.setSize(100, 50);
+			thorbensPanel.add(line1);
+		}		
+	}
+	
+}
+
 /*
  * TEIL 2 
  * Hier laufen alle "Aktionen ab" 
@@ -689,27 +783,23 @@ public void ipsSchreiben(){
 /*
  * Anzeige des Spielfelds
  * KeyListener für das Spielfed
- * 
+ * Hilsmethoden um das Spielfeld anzuzeigen von Thorben : 
+ * "create"
+ * "erzeugeSpielfeld"
  * 
  */
 
 public void spielfeld() throws IOException{
 	this.spielvorbereitungsDisplay.setVisible(false);
 	this.pausenDisplay.setVisible(false);
-//	AnzeigeSpielfeld rr= new AnzeigeSpielfeld("Spielfeld.txt", thorbensPanel);
-//	thorbensPanel =rr.getPanel();
 	pause = false; 
-	this.setzeAnzeigeSpielfeld();
+	setzeAnzeigeSpielfeld();
 	add(thorbensPanel);
 	thorbensPanel.setVisible(true);
 	thorbensPanel.setBackground(Color.white);
 	setSize(1000, 1000);
 	thorbensPanel.addKeyListener(this);
-    thorbensPanel.setFocusable(true);
-    
-	 
-
-	
+    thorbensPanel.setFocusable(true);	
 }
 
 public void keyPressed(KeyEvent l) {
@@ -890,118 +980,16 @@ public void kollision () {
 
 
 public void Positionstracking (){
-	
-	int g1 = Position.getPosSepman();
-	int g2 = Position.getPosTracer();
-	int g3 = Position.getPosDefender();
-	int g4 = Position.getPosRandom();
-	
-	AnzeigeSpielfeld.makiereKanten(2);
-	AnzeigeSpielfeld.setzeSepmanAnzeige(g1);
-	AnzeigeSpielfeld.setzeTracerAnzeige(g2);
-	AnzeigeSpielfeld.setzeDefenderAnzeige(g3);
-	AnzeigeSpielfeld.setzeRandomAnzeige(g4);
-	
+	this.Sepman   = Position.getPosSepman();
+	this.Tracer   = Position.getPosTracer();
+	this.Defender = Position.getPosDefender();
+	this.Random   = Position.getPosRandom();	
+
 }
 
-@Override
-public void run() { 
-	this.kollisionserkennung();
-	this.Positionstracking();
-	
-}
 
-public void setzeAnzeigeSpielfeld () throws IOException{
-	create("Spielfeld.txt");
-	setBounds(100, 100, (Länge+1)*150, (Breite+1)*150);
-	 
-	thorbensPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-	thorbensPanel.setLayout(null);
-	
-	JLabel[] ele=erzeugeSpielfeld();
 
-	/*
-	 * Hinzufügen des Sepmanns und der Geister
-	 */
 
-	jSepman.setBounds(ele[Sepman].getX() , ele[Sepman].getY(), 65, 65);   //Mark
-	thorbensPanel.add(jSepman);                                              //Mark
-
-	jRandom.setBounds(ele[Random].getX() , ele[Random].getY(), 60, 55);   //Mark
-	thorbensPanel.add(jRandom);                                              //Mark
-	
-	jGuard.setBounds(ele[Defender].getX() , ele[Defender].getY(), 60, 55);   //Mark
-	thorbensPanel.add(jGuard);                                                 //Mark
-	   
-	jTracker.setBounds(ele[Tracer].getX() , ele[Tracer].getY(), 60, 55);   //Mark
-	thorbensPanel.add(jTracker);                                               //Mark
-	
-	/*
-	 * Hinzufügen der PowerUps
-	 */
-	
-	ImageIcon iiPowerup = new ImageIcon("Powerup.png");   // Hinzugefügt von Mark
-	
-	JLabel lbPowerUp1 = new JLabel(iiPowerup);  // Hinzugefügt von Mark
-	lbPowerUp1.setBounds(ele[5].getX(), ele[5].getY(), 55, 55);  // Hinzugefügt von Mark
-	thorbensPanel.add(lbPowerUp1);                // Hinzugefügt von Mark
-		
-	JLabel lbPowerUp2 = new JLabel(iiPowerup);  // Hinzugefügt von Mark
-	lbPowerUp2.setBounds(ele[16].getX(), ele[16].getY(), 55, 55);  // Hinzugefügt von Mark
-	thorbensPanel.add(lbPowerUp2);                // Hinzugefügt von Mark
-		
-	JLabel lbPowerUp3 = new JLabel(iiPowerup);  // Hinzugefügt von Mark
-	lbPowerUp3.setBounds(ele[19].getX(), ele[19].getY(), 55, 55);  // Hinzugefügt von Mark
-	thorbensPanel.add(lbPowerUp3);                // Hinzugefügt von Mark
-		
-	JLabel lbPowerUp4 = new JLabel(iiPowerup);  // Hinzugefügt von Mark
-	lbPowerUp4.setBounds(ele[30].getX(), ele[30].getY(), 55, 55);  // Hinzugefügt von Mark
-	thorbensPanel.add(lbPowerUp4);                // Hinzugefügt von Mark
-	
-	
-	
-	ImageIcon Herz=new ImageIcon("herz.gif");
-	
-	JLabel Leben1=new JLabel(Herz);
-	Leben1.setSize(50, 50);
-	Leben1.setLocation(10, 10);
-	thorbensPanel.add(Leben1);
-	
-	JLabel Leben2=new JLabel(Herz);       
-	Leben2.setSize(50, 50);
-	Leben2.setLocation(60, 10);
-	thorbensPanel.add(Leben2);
-	
-	JLabel Leben3=new JLabel(Herz);
-	Leben3.setSize(50, 50);
-	Leben3.setLocation(110, 10);
-	thorbensPanel.add(Leben3);
-	
-	ImageIcon linie1=new ImageIcon("Linie.png");
-	JLabel line1=new JLabel(linie1);
-	
-	ImageIcon linie2=new ImageIcon("Linie2.png");
-	JLabel line2=new JLabel(linie2);
-	
-	for(int z=0;z<Größe;z++)
-	{
-		if(Spielbrett[z].getNord()==true)
-		{
-			line2=new JLabel(linie2);
-			line2.setLocation(ele[z].getX()+5, ele[z].getY()-100); // Überarbeitet von Mark
-			line2.setSize(50, 100);
-			thorbensPanel.add(line2);				
-		}
-		if(Spielbrett[z].getOst()==true)
-		{
-			line1=new JLabel(linie1);
-			line1.setLocation(ele[z].getX()+55, ele[z].getY()); // Überarbeitet von Mark
-			line1.setSize(100, 50);
-			thorbensPanel.add(line1);
-		}		
-	}
-	
-}
 
 public JLabel[] erzeugeSpielfeld()
 {
@@ -1173,9 +1161,7 @@ public void create(String a) throws IOException
     	String s4=String.valueOf(hilfs4)+String.valueOf(hilfs44);
     	Random=Integer.parseInt(s4);
     	pos[1]=Random;
-
     }
-    
 	}
 	
 	Spiel=new Planeinit(name,Nord,Süd,Ost,West,power,pos);//so ists richtig
